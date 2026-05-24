@@ -198,7 +198,7 @@
   .lib-list::-webkit-scrollbar { width: 8px; }
   .lib-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
   .lib-row {
-    display: grid; grid-template-columns: auto 1.5fr 1.1fr auto auto auto; gap: 12px;
+    display: grid; grid-template-columns: auto 1.4fr 1.0fr auto auto auto auto; gap: 10px;
     align-items: center; padding: 11px 6px; border-bottom: 1px solid var(--line); font-size: 13px;
   }
   .lib-row:hover { background: rgba(255,255,255,0.015); }
@@ -318,6 +318,14 @@
       </div>
     </div>
     <div class="filter-row">
+      <div class="filter-head">Tuning</div>
+      <div class="seg" id="segTuning">
+        <button data-v="any" class="on">Any</button>
+        <button data-v="standard">Standard</button>
+        <button data-v="drop">Drop</button>
+      </div>
+    </div>
+    <div class="filter-row">
       <div class="filter-head">Genres — tap to exclude</div>
       <div class="genre-grid" id="genreGrid"></div>
       <div class="genre-quick">
@@ -351,6 +359,9 @@
         <span class="lbl">Strings:</span>
         <button class="mini-toggle on" data-grp="newStrings" data-v="6">6-string</button>
         <button class="mini-toggle" data-grp="newStrings" data-v="7">7-string</button>
+        <span class="lbl">Tuning:</span>
+        <button class="mini-toggle on" data-grp="newTuning" data-v="standard">Standard</button>
+        <button class="mini-toggle" data-grp="newTuning" data-v="drop">Drop</button>
       </div>
     </div>
 
@@ -370,6 +381,9 @@
         <span class="lbl">Strings:</span>
         <button class="mini-toggle on" data-grp="bulkStrings" data-v="6">6-str</button>
         <button class="mini-toggle" data-grp="bulkStrings" data-v="7">7-str</button>
+        <span class="lbl">Tuning:</span>
+        <button class="mini-toggle on" data-grp="bulkTuning" data-v="standard">Std</button>
+        <button class="mini-toggle" data-grp="bulkTuning" data-v="drop">Drop</button>
         <button class="add-btn" id="bulkAddBtn" style="font-size:16px;padding:9px 18px">Add selected</button>
       </div>
     </div>
@@ -388,6 +402,9 @@
         <span class="lbl">Set strings:</span>
         <select id="editStrings"><option value="">—</option><option value="6">6-string</option><option value="7">7-string</option></select>
         <button id="applyStrings">Apply</button>
+        <span class="lbl">Set tuning:</span>
+        <select id="editTuning"><option value="">—</option><option value="standard">Standard</option><option value="drop">Drop</option></select>
+        <button id="applyTuning">Apply</button>
         <button id="deleteSel" style="background:var(--rust)">Delete selected</button>
       </div>
       <div class="lib-list" id="libList"></div>
@@ -706,9 +723,11 @@
   ];
 
   var library = [];
-  var filters = { strings: "any", excludedGenres: new Set() };
+  var filters = { strings: "any", tuning: "any", excludedGenres: new Set() };
   var newStrings = "6";
+  var newTuning = "standard";
   var bulkStrings = "6";
+  var bulkTuning = "standard";
   var rolling = false;
   var editMode = false;
   var selected = new Set();
@@ -793,6 +812,7 @@
       var f = window.localStorage.getItem(FILTERS_KEY);
       if (f) { var p = JSON.parse(f);
         filters.strings = p.strings || "any";
+        filters.tuning = p.tuning || "any";
         filters.excludedGenres = new Set(p.excludedGenres || []); }
     } catch (e) {}
 
@@ -836,7 +856,8 @@
   function saveFilters() {
     try {
       window.localStorage.setItem(FILTERS_KEY, JSON.stringify({
-        strings: filters.strings, excludedGenres: Array.from(filters.excludedGenres)
+        strings: filters.strings, tuning: filters.tuning,
+        excludedGenres: Array.from(filters.excludedGenres)
       }));
     } catch (e) {}
   }
@@ -849,6 +870,7 @@
   }
   function matches(song) {
     if (filters.strings !== "any" && String(song.strings) !== filters.strings) return false;
+    if (filters.tuning !== "any" && song.tuning !== filters.tuning) return false;
     if (song.genre && filters.excludedGenres.has(song.genre)) return false;
     return true;
   }
@@ -911,6 +933,7 @@
           '<span class="a">' + esc(s.artist || "—") + '</span>' +
           '<span class="badge">' + esc(s.genre || "—") + '</span>' +
           '<span class="badge">' + esc(s.strings) + '-str</span>' +
+          '<span class="badge">' + (s.tuning === "drop" ? "DROP" : s.tuning === "standard" ? "STD" : "—") + '</span>' +
           '<button class="del" title="Remove">✕</button>';
         row.querySelector(".del").onclick = function () {
           library = library.filter(function (x) { return x.id !== s.id; });
@@ -956,7 +979,9 @@
       '<div class="song-title">' + esc(s.title) + '</div>' +
       '<div class="song-artist">' + esc(s.artist || "") + '</div>' +
       '<div class="song-meta"><span class="chip">' + (s.genre ? esc(s.genre) : "no genre") +
-      '</span><span class="chip">' + esc(s.strings) + '-string</span></div>';
+      '</span><span class="chip">' + esc(s.strings) + '-string</span>' +
+      (s.tuning ? '<span class="chip">' + (s.tuning === "drop" ? "drop" : "standard") + '</span>' : '') +
+      '</div>';
     rolling = false; renderPool();
   }
 
@@ -967,7 +992,7 @@
     var title = t.value.trim();
     if (!title) { t.focus(); return; }
     library.push({ id: uid(), title: title, artist: a.value.trim(),
-      genre: g.value.trim(), strings: newStrings });
+      genre: g.value.trim(), strings: newStrings, tuning: newTuning });
     t.value = ""; a.value = ""; g.value = ""; t.focus();
     scheduleSave(); refresh();
   }
@@ -1044,7 +1069,7 @@
       var item = bulkFound[parseInt(b.dataset.i, 10)];
       if (!item) return;
       library.push({ id: uid(), title: item.title, artist: item.artist,
-        genre: genre, strings: bulkStrings });
+        genre: genre, strings: bulkStrings, tuning: bulkTuning });
       added++;
     });
     scheduleSave(); refresh();
@@ -1068,6 +1093,12 @@
     library.forEach(function (x) { if (selected.has(x.id)) x.strings = v; });
     scheduleSave(); refresh();
   }
+  function applyTuningToSel() {
+    var v = document.getElementById("editTuning").value;
+    if (!v || !selected.size) return;
+    library.forEach(function (x) { if (selected.has(x.id)) x.tuning = v; });
+    scheduleSave(); refresh();
+  }
   function deleteSelected() {
     if (!selected.size) return;
     library = library.filter(function (x) { return !selected.has(x.id); });
@@ -1088,19 +1119,31 @@
       try {
         var data = JSON.parse(e.target.result);
         var arr = Array.isArray(data) ? data : (data.library || []);
-        var added = 0;
+        var added = 0, updated = 0;
         arr.forEach(function (s) {
           if (!s || !s.title) return;
-          var dup = library.some(function (x) {
+          var dup = library.find(function (x) {
             return x.title.toLowerCase() === String(s.title).toLowerCase() &&
                    (x.artist || "").toLowerCase() === String(s.artist || "").toLowerCase();
           });
-          if (!dup) { library.push({ id: uid(), title: String(s.title),
-            artist: String(s.artist || ""), genre: String(s.genre || ""),
-            strings: String(s.strings) === "7" ? "7" : "6" }); added++; }
+          if (dup) {
+            // update fields from import (preserve existing id)
+            var changed = false;
+            if (s.tuning && dup.tuning !== s.tuning) { dup.tuning = s.tuning; changed = true; }
+            if (s.genre && dup.genre !== s.genre) { dup.genre = String(s.genre); changed = true; }
+            if (s.strings && dup.strings !== String(s.strings)) { dup.strings = String(s.strings); changed = true; }
+            if (s.artist && dup.artist !== String(s.artist)) { dup.artist = String(s.artist); changed = true; }
+            if (changed) updated++;
+          } else {
+            library.push({ id: uid(), title: String(s.title),
+              artist: String(s.artist || ""), genre: String(s.genre || ""),
+              strings: String(s.strings) === "7" ? "7" : "6",
+              tuning: s.tuning === "drop" ? "drop" : s.tuning === "standard" ? "standard" : "" });
+            added++;
+          }
         });
         scheduleSave(); refresh();
-        alert("Imported " + added + " song" + (added === 1 ? "" : "s") + ".");
+        alert("Import complete.\n" + added + " added, " + updated + " updated.");
       } catch (err) { alert("Couldn't read that file."); }
     };
     r.readAsText(file);
@@ -1133,6 +1176,10 @@
     seg.querySelectorAll("button").forEach(function (b) {
       b.classList.toggle("on", b.dataset.v === filters.strings);
     });
+    var seg2 = document.getElementById("segTuning");
+    seg2.querySelectorAll("button").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.v === filters.tuning);
+    });
   }
 
   function wire() {
@@ -1143,7 +1190,9 @@
           .forEach(function (x) { x.classList.remove("on"); });
         b.classList.add("on");
         if (grp === "newStrings") newStrings = b.dataset.v;
-        else bulkStrings = b.dataset.v;
+        else if (grp === "newTuning") newTuning = b.dataset.v;
+        else if (grp === "bulkStrings") bulkStrings = b.dataset.v;
+        else if (grp === "bulkTuning") bulkTuning = b.dataset.v;
       };
     });
     document.querySelectorAll(".tab").forEach(function (t) {
@@ -1181,6 +1230,7 @@
     };
     document.getElementById("applyGenre").onclick = applyGenreToSel;
     document.getElementById("applyStrings").onclick = applyStringsToSel;
+    document.getElementById("applyTuning").onclick = applyTuningToSel;
     document.getElementById("deleteSel").onclick = deleteSelected;
     document.getElementById("genreAll").onclick = function () {
       filters.excludedGenres.clear(); saveFilters(); renderGenres(); renderPool();
@@ -1197,6 +1247,7 @@
     };
     document.getElementById("restoreBtn").onclick = restoreSeed;
     bindSeg("segStrings", "strings");
+    bindSeg("segTuning", "tuning");
   }
 
   // ---------- Gate ----------
