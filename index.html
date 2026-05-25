@@ -425,8 +425,8 @@
   //  CONFIG
   // ============================================================
   var CONFIG = {
-    JSONKEEPER_URL: "https://jsonkeeper.com/b/AEONI",
-    PASSPHRASE:    "Gu1t@r"
+    NPOINT_URL:  "https://api.npoint.io/583ef5fa85294a649a1d",
+    PASSPHRASE:  "Gu1t@r"
   };
   // ============================================================
 
@@ -469,25 +469,27 @@
     document.getElementById("syncText").textContent = text;
   }
 
-  // ---------- Cloud (JSONkeeper) ----------
-  // JSONkeeper API:
-  //   GET  https://jsonkeeper.com/b/<ID>          — returns the JSON array directly
-  //   PUT  https://jsonkeeper.com/b/<ID>          — replaces with new JSON body
-  //   Header for writes: X-ACCESS-TOKEN (if the doc was created with one)
+  // ---------- Cloud (npoint.io) ----------
+  // npoint.io API:
+  //   GET  https://api.npoint.io/<ID>  — returns the JSON contents
+  //   POST https://api.npoint.io/<ID>  — replaces with new JSON body
+  //   Full CORS support, no auth needed for public bins.
 
   async function cloudLoad() {
-    var res = await fetch(CONFIG.JSONKEEPER_URL, {
+    var res = await fetch(CONFIG.NPOINT_URL, {
       headers: { "Accept": "application/json" }
     });
     if (!res.ok) throw new Error("load " + res.status);
     var data = await res.json();
-    // Data is stored as raw array
-    return Array.isArray(data) ? data : (data.library || []);
+    // npoint may return the raw array, or wrap it under { library: [...] }
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.library)) return data.library;
+    return [];
   }
 
   async function cloudSave() {
-    var res = await fetch(CONFIG.JSONKEEPER_URL, {
-      method: "PUT",
+    var res = await fetch(CONFIG.NPOINT_URL, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(library)
     });
