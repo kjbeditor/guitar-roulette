@@ -247,7 +247,6 @@
   .tool-btns button:hover { border-color: var(--amber); color: var(--amber); }
   footer { text-align: center; margin-top: 40px; color: #44444a; font-size: 11px; letter-spacing: 2px; }
 
-  /* Gate */
   .gate {
     position: fixed; inset: 0; z-index: 100; background: var(--bg);
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 24px;
@@ -277,7 +276,6 @@
 </head>
 <body>
 
-<!-- ============ PASSPHRASE GATE ============ -->
 <div class="gate" id="gate">
   <h2>Guitar<span>Roulette</span></h2>
   <p>Enter passphrase to continue.</p>
@@ -287,7 +285,6 @@
 </div>
 
 <div class="wrap" id="app" style="display:none">
-
   <header>
     <h1>Guitar<span>Roulette</span></h1>
     <div class="tagline">Stop choosing.<br>Start playing.</div>
@@ -346,7 +343,6 @@
       <button class="tab" data-tab="manage">Manage</button>
     </div>
 
-    <!-- SINGLE ADD -->
     <div class="tab-pane on" data-pane="single">
       <div class="add-form">
         <input type="text" id="inTitle" placeholder="Song title" />
@@ -365,7 +361,6 @@
       </div>
     </div>
 
-    <!-- BULK ADD -->
     <div class="tab-pane" data-pane="bulk">
       <div class="bulk-search">
         <input type="text" id="bulkArtist" placeholder="Type an artist, e.g. A Day To Remember" />
@@ -388,7 +383,6 @@
       </div>
     </div>
 
-    <!-- MANAGE -->
     <div class="tab-pane" data-pane="manage">
       <div class="filter-bar">
         <input type="text" id="searchBox" placeholder="Search library…" />
@@ -428,321 +422,46 @@
   "use strict";
 
   // ============================================================
-  //  CONFIG  —  fill these three values in (instructions below)
+  //  CONFIG
   // ============================================================
   var CONFIG = {
-    JSONBIN_BIN_ID:     "6a09e570250b1311c363dca4",
-    JSONBIN_MASTER_KEY: "$2a$10$18TNaA1vvJXgRzg6MEi2d.wXiCQcD/SbJcEwoRePBJ/NQOdupSlOq",
-    PASSPHRASE:         "Gu1t@r"
+    JSONKEEPER_URL: "https://jsonkeeper.com/b/AEONI",
+    PASSPHRASE:    "Gu1t@r"
   };
   // ============================================================
 
   var SEED = [
-    {t:"Machinehead",a:"Bush",g:"Alt Rock",s:"6"},
-    {t:"Everything Zen",a:"Bush",g:"Alt Rock",s:"6"},
-    {t:"Pardon Me",a:"Incubus",g:"Alt Rock",s:"6"},
-    {t:"Nowhere Fast",a:"Incubus",g:"Alt Rock",s:"6"},
-    {t:"A Favor House Atlantic",a:"Coheed & Cambria",g:"Prog",s:"6"},
-    {t:"In Keeping Secrets of Silent Earth: 3",a:"Coheed & Cambria",g:"Prog",s:"6"},
-    {t:"Dumpweed",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"First Date",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Don't Leave Me",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Going Away To College",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Dysentery Gary",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"The Party Song",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Mutt",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Wendy Clear",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Pathetic",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Voyeur",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Enthused",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Online Songs",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Roller Coaster",a:"Blink-182",g:"Pop Punk",s:"6"},
-    {t:"Wherever I May Roam",a:"Metallica",g:"Metal",s:"6"},
-    {t:"Of Wolf and Man",a:"Metallica",g:"Metal",s:"6"},
-    {t:"Enter Sandman",a:"Metallica",g:"Metal",s:"6"},
-    {t:"Seek and Destroy",a:"Metallica",g:"Metal",s:"6"},
-    {t:"Fuel",a:"Metallica",g:"Metal",s:"6"},
-    {t:"King Nothing",a:"Metallica",g:"Metal",s:"6"},
-    {t:"The God That Failed",a:"Metallica",g:"Metal",s:"6"},
-    {t:"Sad But True",a:"Metallica",g:"Metal",s:"6"},
-    {t:"My Friends Over You",a:"New Found Glory",g:"Pop Punk",s:"6"},
-    {t:"Hit or Miss",a:"New Found Glory",g:"Pop Punk",s:"6"},
-    {t:"Am I Ready",a:"Spitalfield",g:"Pop Punk",s:"6"},
-    {t:"Those Days You Felt Alive",a:"Spitalfield",g:"Pop Punk",s:"6"},
-    {t:"Stolen From Some Great Writer",a:"Spitalfield",g:"Pop Punk",s:"6"},
-    {t:"I Loved The Way She Said L.A.",a:"Spitalfield",g:"Pop Punk",s:"6"},
-    {t:"Kill The Drama",a:"Spitalfield",g:"Pop Punk",s:"6"},
-    {t:"Responsibility",a:"MxPx",g:"Pop Punk",s:"6"},
-    {t:"Movies",a:"Alien Ant Farm",g:"Nu Metal",s:"6"},
-    {t:"Smooth Criminal",a:"Alien Ant Farm",g:"Nu Metal",s:"6"},
-    {t:"Shedding Skin",a:"Pantera",g:"Metal",s:"6"},
-    {t:"My Own Worst Enemy",a:"Lit",g:"Alt Rock",s:"6"},
-    {t:"My Hero",a:"Foo Fighters",g:"Alt Rock",s:"6"},
-    {t:"Monkey Wrench",a:"Foo Fighters",g:"Alt Rock",s:"6"},
-    {t:"Everlong",a:"Foo Fighters",g:"Alt Rock",s:"6"},
-    {t:"Totalimmortal",a:"AFI",g:"Punk Rock",s:"6"},
-    {t:"Halloween",a:"AFI",g:"Punk Rock",s:"6"},
-    {t:"The Nephilim",a:"AFI",g:"Punk Rock",s:"6"},
-    {t:"Strength Through Wounding",a:"AFI",g:"Punk Rock",s:"6"},
-    {t:"Porphyria",a:"AFI",g:"Punk Rock",s:"6"},
-    {t:"Malleus Maleficarum",a:"AFI",g:"Punk Rock",s:"6"},
-    {t:"The Prayer Position",a:"AFI",g:"Punk Rock",s:"6"},
-    {t:"Miss Murder",a:"AFI",g:"Alt Rock",s:"6"},
-    {t:"Beelzeboss",a:"Tenacious D",g:"Hard Rock",s:"6"},
-    {t:"Santa Monica",a:"Everclear",g:"Alt Rock",s:"6"},
-    {t:"My Favorite Accident",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"When You're Around",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"This Is For Real",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Fell In Love Without You",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Attractive Today",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Broken Heart",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Everything Is Alright",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Pulp Fiction",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Her Words Destroyed My Planet",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Feel Like Rain",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Hysteria",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Boombox Generation",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"@!#?@!",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Perfect Teeth",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Time Turned Fragile",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"Hello Helicopter",a:"Motion City Soundtrack",g:"Pop Punk",s:"6"},
-    {t:"No Cigar",a:"Millencolin",g:"Punk Rock",s:"6"},
-    {t:"Penguins And Polar Bears",a:"Millencolin",g:"Punk Rock",s:"6"},
-    {t:"Duck Pond",a:"Millencolin",g:"Punk Rock",s:"6"},
-    {t:"Bullion",a:"Millencolin",g:"Punk Rock",s:"6"},
-    {t:"Olympic",a:"Millencolin",g:"Punk Rock",s:"6"},
-    {t:"Lozin Must",a:"Millencolin",g:"Punk Rock",s:"6"},
-    {t:"Trendy Winds",a:"Millencolin",g:"Punk Rock",s:"6"},
-    {t:"Train",a:"Lagwagon",g:"Punk Rock",s:"6"},
-    {t:"After You My Friend",a:"Lagwagon",g:"Punk Rock",s:"6"},
-    {t:"Leave The Light On",a:"Lagwagon",g:"Punk Rock",s:"6"},
-    {t:"Back In Black",a:"AC/DC",g:"Hard Rock",s:"6"},
-    {t:"Thunderstruck",a:"AC/DC",g:"Hard Rock",s:"6"},
-    {t:"Angel",a:"Slick Shoes",g:"Pop Punk",s:"6"},
-    {t:"At Your Funeral",a:"Saves The Day",g:"Pop Punk",s:"6"},
-    {t:"Cochise",a:"Audioslave",g:"Hard Rock",s:"6"},
-    {t:"Spiderwebs",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Short Skirt / Long Jacket",a:"Cake",g:"Alt Rock",s:"6"},
-    {t:"The Distance",a:"Cake",g:"Alt Rock",s:"6"},
-    {t:"Inside Out",a:"Eve 6",g:"Alt Rock",s:"6"},
-    {t:"Never Enough",a:"Turnstile",g:"Hardcore",s:"6"},
-    {t:"Holiday",a:"Turnstile",g:"Hardcore",s:"6"},
-    {t:"I Care",a:"Turnstile",g:"Hardcore",s:"6"},
-    {t:"Real Thing",a:"Turnstile",g:"Hardcore",s:"6"},
-    {t:"TLC",a:"Turnstile",g:"Hardcore",s:"6"},
-    {t:"Mystery",a:"Turnstile",g:"Hardcore",s:"6"},
-    {t:"Carry On My Wayward Son",a:"Kansas",g:"Prog",s:"6"},
-    {t:"Scared Of Everything And Nothing",a:"Drain",g:"Hardcore",s:"6"},
-    {t:"Dead On Arrival",a:"Fall Out Boy",g:"Pop Punk",s:"6"},
-    {t:"Tell That Mick He Just Made My List Of Things To Do Today",a:"Fall Out Boy",g:"Pop Punk",s:"6"},
-    {t:"Saturday",a:"Fall Out Boy",g:"Pop Punk",s:"6"},
-    {t:"Homesick At Space Camp",a:"Fall Out Boy",g:"Pop Punk",s:"6"},
-    {t:"Grand Theft Autumn (Where Is Your Boy)",a:"Fall Out Boy",g:"Pop Punk",s:"6"},
-    {t:"Sugar, We're Going Down",a:"Fall Out Boy",g:"Pop Punk",s:"6"},
-    {t:"Buried Myself Alive",a:"The Used",g:"Post-Hardcore",s:"6"},
-    {t:"Maybe Memories",a:"The Used",g:"Post-Hardcore",s:"6"},
-    {t:"That Taste of Ink",a:"The Used",g:"Post-Hardcore",s:"6"},
-    {t:"A Box Full of Sharp Objects",a:"The Used",g:"Post-Hardcore",s:"6"},
-    {t:"Beautiful Disaster",a:"311",g:"Alt Rock",s:"6"},
-    {t:"Bring Me To Life",a:"Evanescence",g:"Nu Metal",s:"6"},
-    {t:"Stacy's Mom",a:"Fountains of Wayne",g:"Alt Rock",s:"6"},
-    {t:"The Best Of Me",a:"The Starting Line",g:"Pop Punk",s:"6"},
-    {t:"Little Things",a:"Good Charlotte",g:"Pop Punk",s:"6"},
-    {t:"Buddy Holly",a:"Weezer",g:"Alt Rock",s:"6"},
-    {t:"Hash Pipe",a:"Weezer",g:"Alt Rock",s:"6"},
-    {t:"Danger Zone",a:"Kenny Loggins",g:"Hard Rock",s:"6"},
-    {t:"1979",a:"Smashing Pumpkins",g:"Alt Rock",s:"6"},
-    {t:"Zero",a:"Smashing Pumpkins",g:"Alt Rock",s:"6"},
-    {t:"Burnout",a:"Green Day",g:"Pop Punk",s:"6"},
-    {t:"Kelly Song",a:"The Movielife",g:"Pop Punk",s:"6"},
-    {t:"Check My Brain",a:"Alice In Chains",g:"Grunge",s:"6"},
-    {t:"Suspension",a:"Mae",g:"Alt Rock",s:"6"},
-    {t:"Nerdy",a:"Poison The Well",g:"Post-Hardcore",s:"6"},
-    {t:"Slice Paper Wrists",a:"Poison The Well",g:"Post-Hardcore",s:"6"},
-    {t:"Artists Rendering of Me",a:"Poison The Well",g:"Post-Hardcore",s:"6"},
-    {t:"My Mirror No Longer Reflects",a:"Poison The Well",g:"Post-Hardcore",s:"6"},
-    {t:"12/23/98",a:"Poison The Well",g:"Post-Hardcore",s:"6"},
-    {t:"A Wish For Wings That Work",a:"Poison The Well",g:"Post-Hardcore",s:"6"},
-    {t:"Botchla",a:"Poison The Well",g:"Post-Hardcore",s:"6"},
-    {t:"Sticks And Stones Never Made Sense",a:"Poison The Well",g:"Post-Hardcore",s:"6"},
-    {t:"Pain",a:"Jimmy Eat World",g:"Alt Rock",s:"6"},
-    {t:"The Middle",a:"Jimmy Eat World",g:"Alt Rock",s:"6"},
-    {t:"A Praise Chorus",a:"Jimmy Eat World",g:"Alt Rock",s:"6"},
-    {t:"The Authority Song",a:"Jimmy Eat World",g:"Alt Rock",s:"6"},
-    {t:"Lucky Denver Mint",a:"Jimmy Eat World",g:"Alt Rock",s:"6"},
-    {t:"Crush",a:"Jimmy Eat World",g:"Alt Rock",s:"6"},
-    {t:"Sweetness",a:"Jimmy Eat World",g:"Alt Rock",s:"6"},
-    {t:"Futures",a:"Jimmy Eat World",g:"Alt Rock",s:"6"},
-    {t:"Last Resort",a:"Papa Roach",g:"Nu Metal",s:"6"},
-    {t:"Feel Good Drag",a:"Anberlin",g:"Alt Rock",s:"6"},
-    {t:"Paperthin Hymn",a:"Anberlin",g:"Alt Rock",s:"6"},
-    {t:"Never Take Friendship Personal",a:"Anberlin",g:"Alt Rock",s:"6"},
-    {t:"What It Is To Burn",a:"Finch",g:"Post-Hardcore",s:"6"},
-    {t:"Buried A Lie",a:"Senses Fail",g:"Post-Hardcore",s:"6"},
-    {t:"Bite To Break Skin",a:"Senses Fail",g:"Post-Hardcore",s:"6"},
-    {t:"Starstruck",a:"Yellowcard",g:"Pop Punk",s:"6"},
-    {t:"October Nights",a:"Yellowcard",g:"Pop Punk",s:"6"},
-    {t:"Big Apple Heartbreak",a:"Yellowcard",g:"Pop Punk",s:"6"},
-    {t:"Ocean Avenue",a:"Yellowcard",g:"Pop Punk",s:"6"},
-    {t:"Bad Religion",a:"Godsmack",g:"Nu Metal",s:"6"},
-    {t:"I Stand Alone",a:"Godsmack",g:"Nu Metal",s:"6"},
-    {t:"When The Sun Sleeps",a:"Underoath",g:"Metalcore",s:"6"},
-    {t:"Never Meant To Break Your Heart",a:"Underoath",g:"Metalcore",s:"6"},
-    {t:"Angel Below",a:"Underoath",g:"Metalcore",s:"6"},
-    {t:"Short of Daybreak",a:"Underoath",g:"Metalcore",s:"6"},
-    {t:"Freak",a:"Silverchair",g:"Grunge",s:"6"},
-    {t:"Slave",a:"Silverchair",g:"Grunge",s:"6"},
-    {t:"Israel's Son",a:"Silverchair",g:"Grunge",s:"6"},
-    {t:"No Association",a:"Silverchair",g:"Grunge",s:"6"},
-    {t:"The Door",a:"Silverchair",g:"Grunge",s:"6"},
-    {t:"Blind",a:"Silverchair",g:"Grunge",s:"6"},
-    {t:"The Closing",a:"Silverchair",g:"Grunge",s:"6"},
-    {t:"Undecided",a:"Silverchair",g:"Grunge",s:"6"},
-    {t:"Roses",a:"Silverchair",g:"Grunge",s:"6"},
-    {t:"Pressure",a:"Paramore",g:"Pop Punk",s:"6"},
-    {t:"Still Into You",a:"Paramore",g:"Pop Punk",s:"6"},
-    {t:"Brick By Boring Brick",a:"Paramore",g:"Pop Punk",s:"6"},
-    {t:"Misery Business",a:"Paramore",g:"Pop Punk",s:"6"},
-    {t:"Decode",a:"Paramore",g:"Pop Punk",s:"6"},
-    {t:"Song 2",a:"Blur",g:"Alt Rock",s:"6"},
-    {t:"Dez Moines",a:"The Devil Wears Prada",g:"Metalcore",s:"6"},
-    {t:"No Donnie, These Men Are Nihilist",a:"Evergreen Terrace",g:"Metalcore",s:"6"},
-    {t:"Hummannequin",a:"The Color Morale",g:"Metalcore",s:"6"},
-    {t:"Vulture",a:"A Life Once Lost",g:"Metalcore",s:"6"},
-    {t:"Better Hell",a:"Bilmuri",g:"Post-Hardcore",s:"6"},
-    {t:"Emptyhanded",a:"Bilmuri",g:"Post-Hardcore",s:"6"},
-    {t:"The End",a:"Bilmuri",g:"Post-Hardcore",s:"6"},
-    {t:"Spinnin You Around",a:"Bilmuri",g:"Post-Hardcore",s:"6"},
-    {t:"Testify",a:"Rage Against The Machine",g:"Hard Rock",s:"6"},
-    {t:"Born Of A Broken Man",a:"Rage Against The Machine",g:"Hard Rock",s:"6"},
-    {t:"Killing In the Name Of",a:"Rage Against The Machine",g:"Hard Rock",s:"6"},
-    {t:"Car Underwater",a:"Armor for Sleep",g:"Alt Rock",s:"6"},
-    {t:"Devotion & Desire",a:"Bayside",g:"Pop Punk",s:"6"},
-    {t:"Already Gone",a:"Bayside",g:"Pop Punk",s:"6"},
-    {t:"They're Not Horses, They're Unicorns",a:"Bayside",g:"Pop Punk",s:"6"},
-    {t:"Tortures Of The Damned",a:"Bayside",g:"Pop Punk",s:"6"},
-    {t:"Death to Traitors",a:"Beloved",g:"Post-Hardcore",s:"6"},
-    {t:"My Own Summer (Shove It)",a:"Deftones",g:"Nu Metal",s:"6"},
-    {t:"Change in the House of Flies",a:"Deftones",g:"Nu Metal",s:"6"},
-    {t:"Passenger",a:"Deftones",g:"Nu Metal",s:"6"},
-    {t:"Knife Party",a:"Deftones",g:"Nu Metal",s:"6"},
-    {t:"Back to School",a:"Deftones",g:"Nu Metal",s:"6"},
-    {t:"Memphis Will Be Laid To Waste",a:"Norma Jean",g:"Metalcore",s:"6"},
-    {t:"One Step Closer",a:"Linkin Park",g:"Nu Metal",s:"6"},
-    {t:"Crawling",a:"Linkin Park",g:"Nu Metal",s:"6"},
-    {t:"Papercut",a:"Linkin Park",g:"Nu Metal",s:"6"},
-    {t:"Stick Stickly",a:"Attack Attack",g:"Metalcore",s:"6"},
-    {t:"Smokahontas",a:"Attack Attack",g:"Metalcore",s:"6"},
-    {t:"Wake the Dead",a:"Comeback Kid",g:"Hardcore",s:"6"},
-    {t:"Lump",a:"Presidents of the United States of America",g:"Alt Rock",s:"6"},
-    {t:"The Downfall of Us All",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Have Faith In Me",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"I'm Made of Wax, Larry, What Are You Made Of",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"The Plot To Bomb The Panhandle",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Monument",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"A Shot In The Dark",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Danger In Starting A Fire",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Homesick",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Show 'Em The Ropes",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Fast Forward To 2012",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"NJ Legion Iced Tea",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Speak Of The Devil",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"My Life For Hire",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Holdin' It Down For The Underground",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"You Already Know What You Are",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Another Song About The Weekend",a:"A Day To Remember",g:"Pop Punk",s:"6"},
-    {t:"Entombment Of A Machine",a:"Job for a Cowboy",g:"Metal",s:"6"},
-    {t:"My Curse",a:"Killswitch Engage",g:"Metalcore",s:"6"},
-    {t:"Chop Suey",a:"System Of A Down",g:"Nu Metal",s:"6"},
-    {t:"Aerials",a:"System Of A Down",g:"Nu Metal",s:"6"},
-    {t:"Dragula",a:"Rob Zombie",g:"Nu Metal",s:"6"},
-    {t:"Superbeast",a:"Rob Zombie",g:"Nu Metal",s:"6"},
-    {t:"Lies Of Serpents, A River Of Tears",a:"Zao",g:"Metalcore",s:"6"},
-    {t:"Rising End",a:"Zao",g:"Metalcore",s:"6"},
-    {t:"Five Year Winter",a:"Zao",g:"Metalcore",s:"6"},
-    {t:"This Is More",a:"Stick To Your Guns",g:"Hardcore",s:"6"},
-    {t:"Stare At The Sun",a:"Thrice",g:"Post-Hardcore",s:"6"},
-    {t:"The Artist In The Ambulance",a:"Thrice",g:"Post-Hardcore",s:"6"},
-    {t:"94 Hours",a:"As I Lay Dying",g:"Metalcore",s:"6"},
-    {t:"American Love",a:"Haste The Day",g:"Metalcore",s:"6"},
-    {t:"Looking Down the Barrel of Today",a:"Hatebreed",g:"Hardcore",s:"6"},
-    {t:"Judith",a:"A Perfect Circle",g:"Hard Rock",s:"6"},
-    {t:"Rumble Fish",a:"Sevendust",g:"Nu Metal",s:"6"},
-    {t:"Hopeless",a:"Throwdown",g:"Hardcore",s:"6"},
-    {t:"Forever",a:"Throwdown",g:"Hardcore",s:"6"},
-    {t:"Duality",a:"Slipknot",g:"Metal",s:"6"},
-    {t:"No Rain",a:"Blind Melon",g:"Alt Rock",s:"6"},
-    {t:"Bathwater",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Different People",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Don't Speak",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"End It On This",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Ex-Girlfriend",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Excuse Me Mr.",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Happy Now?",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Hella Good",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Hey Baby",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"It's My Life",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Just A Girl",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"New",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Running",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Simple Kind Of Life",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Sunday Morning",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"The Climb",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Total Hate '95",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Tragic Kingdom",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Trapped In A Box",a:"No Doubt",g:"Alt Rock",s:"6"},
-    {t:"Underneath It All",a:"No Doubt",g:"Alt Rock",s:"6"},
-    // ===== 7-string =====
-    {t:"King of the Rats",a:"Bodysnatcher",g:"Metalcore",s:"7"},
-    {t:"Crewcabanger",a:"Chelsea Grin",g:"Metalcore",s:"7"},
-    {t:"Recreant",a:"Chelsea Grin",g:"Metalcore",s:"7"},
-    {t:"Sonnet Of The Wretched",a:"Chelsea Grin",g:"Metalcore",s:"7"},
-    {t:"Sleep Talk",a:"Dayseeker",g:"Post-Hardcore",s:"7"},
-    {t:"Starving To Be Empty",a:"Dayseeker",g:"Post-Hardcore",s:"7"},
-    {t:"Solar Flare Homicide",a:"Emmure",g:"Metalcore",s:"7"},
-    {t:"The Sea Of Tragic Beasts",a:"Fit For An Autopsy",g:"Metalcore",s:"7"},
-    {t:"All My Friends",a:"Knocked Loose",g:"Hardcore",s:"7"},
-    {t:"Counting Worms",a:"Knocked Loose",g:"Hardcore",s:"7"},
-    {t:"Deadringer",a:"Knocked Loose",g:"Hardcore",s:"7"},
-    {t:"Laugh Tracks",a:"Knocked Loose",g:"Hardcore",s:"7"},
-    {t:"Mistakes Like Fractures",a:"Knocked Loose",g:"Hardcore",s:"7"},
-    {t:"My Heroes",a:"Knocked Loose",g:"Hardcore",s:"7"},
-    {t:"Oblivions Peak",a:"Knocked Loose",g:"Hardcore",s:"7"},
-    {t:"Suffocate",a:"Knocked Loose",g:"Hardcore",s:"7"},
-    {t:"The Hammer",a:"Kublai Khan TX",g:"Hardcore",s:"7"},
-    {t:"Theory of Mind",a:"Kublai Khan TX",g:"Hardcore",s:"7"},
-    {t:"No Pity For A Coward",a:"Suicide Silence",g:"Metalcore",s:"7"},
-    {t:"Unanswered",a:"Suicide Silence",g:"Metalcore",s:"7"},
-    {t:"4x4",a:"The Acacia Strain",g:"Metalcore",s:"7"},
-    {t:"Balboa Towers",a:"The Acacia Strain",g:"Metalcore",s:"7"},
-    {t:"Crippling Poison",a:"The Acacia Strain",g:"Metalcore",s:"7"},
-    {t:"Crossgates",a:"The Acacia Strain",g:"Metalcore",s:"7"},
-    {t:"Eucharist I: Burnt Offering",a:"The Acacia Strain",g:"Metalcore",s:"7"},
-    {t:"Flourishing",a:"The Acacia Strain",g:"Metalcore",s:"7"},
-    {t:"JFC",a:"The Acacia Strain",g:"Metalcore",s:"7"}
+    {t:"Machinehead",a:"Bush",g:"Alt Rock",s:"6",u:"standard"},
+    {t:"Everything Zen",a:"Bush",g:"Alt Rock",s:"6",u:"standard"},
+    {t:"Pardon Me",a:"Incubus",g:"Alt Rock",s:"6",u:"standard"},
+    {t:"Nowhere Fast",a:"Incubus",g:"Alt Rock",s:"6",u:"standard"},
+    {t:"Enter Sandman",a:"Metallica",g:"Metal",s:"6",u:"standard"},
+    {t:"Seek and Destroy",a:"Metallica",g:"Metal",s:"6",u:"standard"},
+    {t:"My Friends Over You",a:"New Found Glory",g:"Pop Punk",s:"6",u:"standard"},
+    {t:"Dumpweed",a:"Blink-182",g:"Pop Punk",s:"6",u:"standard"},
+    {t:"First Date",a:"Blink-182",g:"Pop Punk",s:"6",u:"standard"},
+    {t:"My Hero",a:"Foo Fighters",g:"Alt Rock",s:"6",u:"standard"},
+    {t:"Everlong",a:"Foo Fighters",g:"Alt Rock",s:"6",u:"drop"},
+    {t:"The Downfall of Us All",a:"A Day To Remember",g:"Pop Punk",s:"6",u:"drop"},
+    {t:"Counting Worms",a:"Knocked Loose",g:"Hardcore",s:"7",u:"drop"},
+    {t:"Deadringer",a:"Knocked Loose",g:"Hardcore",s:"7",u:"drop"}
   ];
 
   var library = [];
   var filters = { strings: "any", tuning: "any", excludedGenres: new Set() };
-  var newStrings = "6";
-  var newTuning = "standard";
-  var bulkStrings = "6";
-  var bulkTuning = "standard";
-  var rolling = false;
-  var editMode = false;
-  var selected = new Set();
-  var bulkFound = [];
-  var cloudReady = false;
-  var saveTimer = null;
+  var newStrings = "6", newTuning = "standard";
+  var bulkStrings = "6", bulkTuning = "standard";
+  var rolling = false, editMode = false;
+  var selected = new Set(), bulkFound = [];
+  var cloudReady = false, saveTimer = null;
 
-  var LOCAL_KEY = "guitarRoulette:fallback";
+  var LOCAL_KEY   = "guitarRoulette:fallback";
   var FILTERS_KEY = "guitarRoulette:filters";
-  var cfgOK = CONFIG.JSONBIN_BIN_ID.indexOf("PASTE_") === -1 &&
-              CONFIG.JSONBIN_MASTER_KEY.indexOf("PASTE_") === -1;
 
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function esc(s) {
-    return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    return String(s == null ? "" : s)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   }
   function setSync(state, text) {
     var d = document.getElementById("syncDot");
@@ -750,50 +469,48 @@
     document.getElementById("syncText").textContent = text;
   }
 
-  // ---------- Cloud (JSONBin) ----------
-  var BIN_URL = "https://api.jsonbin.io/v3/b/" + CONFIG.JSONBIN_BIN_ID;
+  // ---------- Cloud (JSONkeeper) ----------
+  // JSONkeeper API:
+  //   GET  https://jsonkeeper.com/b/<ID>          — returns the JSON array directly
+  //   PUT  https://jsonkeeper.com/b/<ID>          — replaces with new JSON body
+  //   Header for writes: X-ACCESS-TOKEN (if the doc was created with one)
 
   async function cloudLoad() {
-    var res = await fetch(BIN_URL + "/latest", {
-      headers: { "X-Master-Key": CONFIG.JSONBIN_MASTER_KEY, "X-Bin-Meta": "false" }
+    var res = await fetch(CONFIG.JSONKEEPER_URL, {
+      headers: { "Accept": "application/json" }
     });
     if (!res.ok) throw new Error("load " + res.status);
     var data = await res.json();
-    // bin shape is { library: [...] }
-    return (data && Array.isArray(data.library)) ? data.library : [];
+    // Data is stored as raw array
+    return Array.isArray(data) ? data : (data.library || []);
   }
+
   async function cloudSave() {
-    var res = await fetch(BIN_URL, {
+    var res = await fetch(CONFIG.JSONKEEPER_URL, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Master-Key": CONFIG.JSONBIN_MASTER_KEY
-      },
-      body: JSON.stringify({ library: library })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(library)
     });
     if (!res.ok) throw new Error("save " + res.status);
   }
 
   function localSave() {
-    try { window.localStorage.setItem(LOCAL_KEY, JSON.stringify(library)); } catch (e) {}
+    try { window.localStorage.setItem(LOCAL_KEY, JSON.stringify(library)); } catch(e) {}
   }
   function localLoad() {
-    try {
-      var v = window.localStorage.getItem(LOCAL_KEY);
-      if (v) return JSON.parse(v);
-    } catch (e) {}
+    try { var v = window.localStorage.getItem(LOCAL_KEY); if (v) return JSON.parse(v); } catch(e) {}
     return null;
   }
 
   function scheduleSave() {
-    localSave(); // always keep a local mirror
+    localSave();
     if (!cloudReady) return;
     setSync("busy", "Saving…");
     if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(function () {
-      cloudSave().then(function () {
+    saveTimer = setTimeout(function() {
+      cloudSave().then(function() {
         setSync("ok", "Synced");
-      }).catch(function (e) {
+      }).catch(function(e) {
         console.error(e);
         setSync("err", "Save failed — change kept locally");
       });
@@ -801,35 +518,26 @@
   }
 
   function seedLibrary() {
-    return SEED.map(function (x) {
-      return { id: uid(), title: x.t, artist: x.a, genre: x.g, strings: x.s };
+    return SEED.map(function(x) {
+      return { id: uid(), title: x.t, artist: x.a, genre: x.g, strings: x.s, tuning: x.u || "" };
     });
   }
 
   async function boot() {
-    // filters
     try {
       var f = window.localStorage.getItem(FILTERS_KEY);
-      if (f) { var p = JSON.parse(f);
+      if (f) {
+        var p = JSON.parse(f);
         filters.strings = p.strings || "any";
-        filters.tuning = p.tuning || "any";
-        filters.excludedGenres = new Set(p.excludedGenres || []); }
-    } catch (e) {}
-
-    if (!cfgOK) {
-      setSync("err", "Cloud not configured — using this browser only");
-      var lib = localLoad();
-      library = (lib && lib.length) ? lib : seedLibrary();
-      cloudReady = false;
-      finishBoot();
-      return;
-    }
+        filters.tuning  = p.tuning  || "any";
+        filters.excludedGenres = new Set(p.excludedGenres || []);
+      }
+    } catch(e) {}
 
     setSync("busy", "Connecting…");
     try {
       var cloud = await cloudLoad();
       if (cloud.length === 0) {
-        // first run on a fresh bin — seed it
         library = seedLibrary();
         await cloudSave();
       } else {
@@ -837,17 +545,13 @@
       }
       cloudReady = true;
       setSync("ok", "Synced");
-    } catch (e) {
+    } catch(e) {
       console.error(e);
       cloudReady = false;
       setSync("err", "Cloud unreachable — using local copy");
       var l = localLoad();
       library = (l && l.length) ? l : seedLibrary();
     }
-    finishBoot();
-  }
-
-  function finishBoot() {
     localSave();
     initFilterUI();
     refresh();
@@ -859,18 +563,18 @@
         strings: filters.strings, tuning: filters.tuning,
         excludedGenres: Array.from(filters.excludedGenres)
       }));
-    } catch (e) {}
+    } catch(e) {}
   }
 
   // ---------- Core ----------
   function allGenres() {
     var s = new Set();
-    library.forEach(function (x) { if (x.genre) s.add(x.genre); });
-    return Array.from(s).sort(function (a, b) { return a.localeCompare(b); });
+    library.forEach(function(x) { if (x.genre) s.add(x.genre); });
+    return Array.from(s).sort(function(a,b) { return a.localeCompare(b); });
   }
   function matches(song) {
     if (filters.strings !== "any" && String(song.strings) !== filters.strings) return false;
-    if (filters.tuning !== "any" && song.tuning !== filters.tuning) return false;
+    if (filters.tuning  !== "any" && song.tuning !== filters.tuning) return false;
     if (song.genre && filters.excludedGenres.has(song.genre)) return false;
     return true;
   }
@@ -880,15 +584,14 @@
     var grid = document.getElementById("genreGrid");
     var genres = allGenres();
     grid.innerHTML = "";
-    if (genres.length === 0) {
+    if (!genres.length) {
       grid.innerHTML = '<span class="idle-text">No genres yet — add songs below.</span>';
     } else {
-      genres.forEach(function (g) {
+      genres.forEach(function(g) {
         var el = document.createElement("div");
-        var ex = filters.excludedGenres.has(g);
-        el.className = "genre-tag" + (ex ? "" : " on");
+        el.className = "genre-tag" + (filters.excludedGenres.has(g) ? "" : " on");
         el.innerHTML = esc(g) + ' <span class="x">✕</span>';
-        el.onclick = function () {
+        el.onclick = function() {
           if (filters.excludedGenres.has(g)) filters.excludedGenres.delete(g);
           else filters.excludedGenres.add(g);
           saveFilters(); renderGenres(); renderPool();
@@ -898,50 +601,50 @@
     }
     var dl = document.getElementById("genreOptions");
     dl.innerHTML = "";
-    genres.forEach(function (g) { var o = document.createElement("option"); o.value = g; dl.appendChild(o); });
+    genres.forEach(function(g) { var o = document.createElement("option"); o.value = g; dl.appendChild(o); });
   }
   function renderPool() {
     var n = pool().length;
     document.getElementById("poolCount").innerHTML =
-      'Pool: <b>' + n + '</b> song' + (n === 1 ? '' : 's') + ' match your filters';
-    document.getElementById("spinBtn").disabled = n === 0 || rolling;
+      'Pool: <b>' + n + '</b> song' + (n===1?'':'s') + ' match your filters';
+    document.getElementById("spinBtn").disabled = n===0 || rolling;
   }
   function renderLibrary() {
     var list = document.getElementById("libList");
     var q = document.getElementById("searchBox").value.trim().toLowerCase();
     list.innerHTML = "";
-    var rows = library.slice().sort(function (a, b) {
-      var aa = (a.artist || "").localeCompare(b.artist || "");
-      return aa !== 0 ? aa : (a.title || "").localeCompare(b.title || "");
+    var rows = library.slice().sort(function(a,b) {
+      var aa = (a.artist||"").localeCompare(b.artist||"");
+      return aa!==0 ? aa : (a.title||"").localeCompare(b.title||"");
     });
-    if (q) rows = rows.filter(function (s) {
-      return (s.title + " " + s.artist + " " + s.genre).toLowerCase().indexOf(q) !== -1;
+    if (q) rows = rows.filter(function(s) {
+      return (s.title+" "+s.artist+" "+s.genre).toLowerCase().indexOf(q)!==-1;
     });
-    if (rows.length === 0) {
+    if (!rows.length) {
       list.innerHTML = '<div class="lib-empty">' +
-        (library.length === 0 ? "Library is empty. Add songs or hit Restore starter set."
-                              : "No songs match your search.") + '</div>';
+        (library.length===0 ? "Library is empty. Add songs or hit Restore starter set."
+                            : "No songs match your search.") + '</div>';
     } else {
-      rows.forEach(function (s) {
+      rows.forEach(function(s) {
         var row = document.createElement("div");
         row.className = "lib-row";
         var cb = editMode
-          ? '<input type="checkbox" data-id="' + s.id + '"' + (selected.has(s.id) ? " checked" : "") + ' />'
+          ? '<input type="checkbox" data-id="'+s.id+'"'+(selected.has(s.id)?" checked":"")+' />'
           : '<span></span>';
         row.innerHTML = cb +
-          '<span class="t">' + esc(s.title) + '</span>' +
-          '<span class="a">' + esc(s.artist || "—") + '</span>' +
-          '<span class="badge">' + esc(s.genre || "—") + '</span>' +
-          '<span class="badge">' + esc(s.strings) + '-str</span>' +
-          '<span class="badge">' + (s.tuning === "drop" ? "DROP" : s.tuning === "standard" ? "STD" : "—") + '</span>' +
+          '<span class="t">'+esc(s.title)+'</span>'+
+          '<span class="a">'+esc(s.artist||"—")+'</span>'+
+          '<span class="badge">'+esc(s.genre||"—")+'</span>'+
+          '<span class="badge">'+esc(s.strings)+'-str</span>'+
+          '<span class="badge">'+(s.tuning==="drop"?"DROP":s.tuning==="standard"?"STD":"—")+'</span>'+
           '<button class="del" title="Remove">✕</button>';
-        row.querySelector(".del").onclick = function () {
-          library = library.filter(function (x) { return x.id !== s.id; });
+        row.querySelector(".del").onclick = function() {
+          library = library.filter(function(x){ return x.id!==s.id; });
           scheduleSave(); refresh();
         };
         if (editMode) {
           var c = row.querySelector("input");
-          c.onchange = function () {
+          c.onchange = function() {
             if (c.checked) selected.add(s.id); else selected.delete(s.id);
             updateSelCount();
           };
@@ -959,316 +662,282 @@
   // ---------- Roll ----------
   function roll() {
     var p = pool();
-    if (p.length === 0 || rolling) return;
+    if (!p.length || rolling) return;
     rolling = true;
     document.getElementById("spinBtn").disabled = true;
     var disp = document.getElementById("display");
-    var ticks = 0, total = 16 + Math.floor(Math.random() * 8), delay = 45;
+    var ticks=0, total=16+Math.floor(Math.random()*8), delay=45;
     function tick() {
-      var pk = p[Math.floor(Math.random() * p.length)];
-      disp.innerHTML = '<div class="song-title rolling">' + esc(pk.title) + '</div>' +
-        '<div class="song-artist">' + esc(pk.artist || "") + '</div>';
+      var pk = p[Math.floor(Math.random()*p.length)];
+      disp.innerHTML = '<div class="song-title rolling">'+esc(pk.title)+'</div>'+
+        '<div class="song-artist">'+esc(pk.artist||"")+'</div>';
       ticks++;
-      if (ticks < total) { if (ticks > total - 6) delay *= 1.28; setTimeout(tick, delay); }
-      else finalPick(p[Math.floor(Math.random() * p.length)]);
+      if (ticks<total) { if(ticks>total-6) delay*=1.28; setTimeout(tick,delay); }
+      else finalPick(p[Math.floor(Math.random()*p.length)]);
     }
     tick();
   }
   function finalPick(s) {
     document.getElementById("display").innerHTML =
-      '<div class="song-title">' + esc(s.title) + '</div>' +
-      '<div class="song-artist">' + esc(s.artist || "") + '</div>' +
-      '<div class="song-meta"><span class="chip">' + (s.genre ? esc(s.genre) : "no genre") +
-      '</span><span class="chip">' + esc(s.strings) + '-string</span>' +
-      (s.tuning ? '<span class="chip">' + (s.tuning === "drop" ? "drop" : "standard") + '</span>' : '') +
+      '<div class="song-title">'+esc(s.title)+'</div>'+
+      '<div class="song-artist">'+esc(s.artist||"")+'</div>'+
+      '<div class="song-meta"><span class="chip">'+(s.genre?esc(s.genre):"no genre")+
+      '</span><span class="chip">'+esc(s.strings)+'-string</span>'+
+      (s.tuning?'<span class="chip">'+(s.tuning==="drop"?"drop":"standard")+'</span>':'')+
       '</div>';
-    rolling = false; renderPool();
+    rolling=false; renderPool();
   }
 
   // ---------- Single add ----------
   function addSong() {
-    var t = document.getElementById("inTitle"), a = document.getElementById("inArtist"),
-        g = document.getElementById("inGenre");
-    var title = t.value.trim();
+    var t=document.getElementById("inTitle"), a=document.getElementById("inArtist"),
+        g=document.getElementById("inGenre");
+    var title=t.value.trim();
     if (!title) { t.focus(); return; }
-    library.push({ id: uid(), title: title, artist: a.value.trim(),
-      genre: g.value.trim(), strings: newStrings, tuning: newTuning });
-    t.value = ""; a.value = ""; g.value = ""; t.focus();
+    library.push({ id:uid(), title:title, artist:a.value.trim(),
+      genre:g.value.trim(), strings:newStrings, tuning:newTuning });
+    t.value=""; a.value=""; g.value=""; t.focus();
     scheduleSave(); refresh();
   }
 
   // ---------- Bulk add via MusicBrainz ----------
   function dedupeTitle(s) {
-    return s.toLowerCase()
-      .replace(/\(.*?\)/g, "").replace(/\[.*?\]/g, "")
-      .replace(/ - .*$/, "")
-      .replace(/[^a-z0-9]/g, "").trim();
+    return s.toLowerCase().replace(/\(.*?\)/g,"").replace(/\[.*?\]/g,"")
+      .replace(/ - .*$/,"").replace(/[^a-z0-9]/g,"").trim();
   }
   async function bulkSearch() {
-    var name = document.getElementById("bulkArtist").value.trim();
+    var name=document.getElementById("bulkArtist").value.trim();
     if (!name) return;
-    var st = document.getElementById("bulkStatus");
-    var box = document.getElementById("bulkResults");
-    document.getElementById("bulkControls").style.display = "none";
-    box.innerHTML = ""; bulkFound = [];
-    st.textContent = "Searching for " + name + "…";
+    var st=document.getElementById("bulkStatus"), box=document.getElementById("bulkResults");
+    document.getElementById("bulkControls").style.display="none";
+    box.innerHTML=""; bulkFound=[];
+    st.textContent="Searching for "+name+"…";
     try {
-      var aRes = await fetch("https://musicbrainz.org/ws/2/artist?fmt=json&limit=1&query=artist:" +
-        encodeURIComponent(name));
-      var aJson = await aRes.json();
-      if (!aJson.artists || !aJson.artists.length) { st.textContent = "No artist found."; return; }
-      var artist = aJson.artists[0];
-      st.textContent = "Found " + artist.name + " — loading songs…";
-      // pull recordings; clean default = studio-ish, deduped
-      var rRes = await fetch("https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&artist=" +
-        artist.id + "&query=arid:" + artist.id);
-      var rJson = await rRes.json();
-      var seen = {}, list = [];
-      (rJson.recordings || []).forEach(function (rec) {
-        var title = rec.title;
-        if (!title) return;
-        var low = title.toLowerCase();
-        if (low.indexOf("live") !== -1 || low.indexOf("demo") !== -1 ||
-            low.indexOf("remix") !== -1 || low.indexOf("instrumental") !== -1 ||
-            low.indexOf("acoustic version") !== -1 || low.indexOf("commentary") !== -1) return;
-        var k = dedupeTitle(title);
-        if (!k || seen[k]) return;
-        seen[k] = 1;
-        list.push({ title: title, artist: artist.name });
+      var aRes=await fetch("https://musicbrainz.org/ws/2/artist?fmt=json&limit=1&query=artist:"+encodeURIComponent(name));
+      var aJson=await aRes.json();
+      if (!aJson.artists||!aJson.artists.length) { st.textContent="No artist found."; return; }
+      var artist=aJson.artists[0];
+      st.textContent="Found "+artist.name+" — loading songs…";
+      var rRes=await fetch("https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&artist="+artist.id+"&query=arid:"+artist.id);
+      var rJson=await rRes.json();
+      var seen={}, list=[];
+      (rJson.recordings||[]).forEach(function(rec) {
+        var title=rec.title; if (!title) return;
+        var low=title.toLowerCase();
+        if (low.indexOf("live")!==-1||low.indexOf("demo")!==-1||low.indexOf("remix")!==-1||
+            low.indexOf("instrumental")!==-1||low.indexOf("acoustic version")!==-1||
+            low.indexOf("commentary")!==-1) return;
+        var k=dedupeTitle(title);
+        if (!k||seen[k]) return;
+        seen[k]=1; list.push({title:title,artist:artist.name});
       });
-      list.sort(function (a, b) { return a.title.localeCompare(b.title); });
-      bulkFound = list;
-      if (!list.length) { st.textContent = "No studio tracks found."; return; }
-      st.textContent = artist.name + " — " + list.length + " tracks. Dim = already in your library.";
-      list.forEach(function (item, i) {
-        var have = library.some(function (x) {
-          return x.title.toLowerCase() === item.title.toLowerCase() &&
-                 (x.artist || "").toLowerCase() === item.artist.toLowerCase();
+      list.sort(function(a,b){return a.title.localeCompare(b.title);});
+      bulkFound=list;
+      if (!list.length) { st.textContent="No studio tracks found."; return; }
+      st.textContent=artist.name+" — "+list.length+" tracks. Dim = already in your library.";
+      list.forEach(function(item,i) {
+        var have=library.some(function(x){
+          return x.title.toLowerCase()===item.title.toLowerCase()&&
+                 (x.artist||"").toLowerCase()===item.artist.toLowerCase();
         });
-        var row = document.createElement("label");
-        row.className = "bulk-item" + (have ? " have" : "");
-        row.innerHTML =
-          '<input type="checkbox" data-i="' + i + '"' + (have ? " disabled" : "") + ' />' +
-          '<span class="bt">' + esc(item.title) + '</span>' +
-          (have ? '<span class="tagged">in library</span>' : '');
+        var row=document.createElement("label");
+        row.className="bulk-item"+(have?" have":"");
+        row.innerHTML='<input type="checkbox" data-i="'+i+'"'+(have?" disabled":"")+' />'+
+          '<span class="bt">'+esc(item.title)+'</span>'+(have?'<span class="tagged">in library</span>':"");
         box.appendChild(row);
       });
-      document.getElementById("bulkGenre").value = "";
-      document.getElementById("bulkControls").style.display = "flex";
-    } catch (e) {
+      document.getElementById("bulkGenre").value="";
+      document.getElementById("bulkControls").style.display="flex";
+    } catch(e) {
       console.error(e);
-      st.textContent = "Search failed — MusicBrainz may be rate-limiting. Wait a few seconds and retry.";
+      st.textContent="Search failed — MusicBrainz may be rate-limiting. Wait a few seconds and retry.";
     }
   }
   function bulkAddSelected() {
-    var boxes = document.querySelectorAll("#bulkResults input[type=checkbox]:checked");
+    var boxes=document.querySelectorAll("#bulkResults input[type=checkbox]:checked");
     if (!boxes.length) return;
-    var genre = document.getElementById("bulkGenre").value.trim();
-    var added = 0;
-    boxes.forEach(function (b) {
-      var item = bulkFound[parseInt(b.dataset.i, 10)];
-      if (!item) return;
-      library.push({ id: uid(), title: item.title, artist: item.artist,
-        genre: genre, strings: bulkStrings, tuning: bulkTuning });
+    var genre=document.getElementById("bulkGenre").value.trim(), added=0;
+    boxes.forEach(function(b) {
+      var item=bulkFound[parseInt(b.dataset.i,10)]; if (!item) return;
+      library.push({id:uid(),title:item.title,artist:item.artist,genre:genre,strings:bulkStrings,tuning:bulkTuning});
       added++;
     });
     scheduleSave(); refresh();
-    document.getElementById("bulkStatus").textContent =
-      "Added " + added + " song" + (added === 1 ? "" : "s") +
-      ". Switch to Manage to set genres if you left it blank.";
-    document.getElementById("bulkResults").innerHTML = "";
-    document.getElementById("bulkControls").style.display = "none";
+    document.getElementById("bulkStatus").textContent="Added "+added+" song"+(added===1?"":"s")+".";
+    document.getElementById("bulkResults").innerHTML="";
+    document.getElementById("bulkControls").style.display="none";
   }
 
   // ---------- Bulk edit ----------
   function applyGenreToSel() {
-    var g = document.getElementById("editGenre").value.trim();
-    if (!g || !selected.size) return;
-    library.forEach(function (x) { if (selected.has(x.id)) x.genre = g; });
+    var g=document.getElementById("editGenre").value.trim();
+    if (!g||!selected.size) return;
+    library.forEach(function(x){if(selected.has(x.id)) x.genre=g;});
     scheduleSave(); refresh();
   }
   function applyStringsToSel() {
-    var v = document.getElementById("editStrings").value;
-    if (!v || !selected.size) return;
-    library.forEach(function (x) { if (selected.has(x.id)) x.strings = v; });
+    var v=document.getElementById("editStrings").value;
+    if (!v||!selected.size) return;
+    library.forEach(function(x){if(selected.has(x.id)) x.strings=v;});
     scheduleSave(); refresh();
   }
   function applyTuningToSel() {
-    var v = document.getElementById("editTuning").value;
-    if (!v || !selected.size) return;
-    library.forEach(function (x) { if (selected.has(x.id)) x.tuning = v; });
+    var v=document.getElementById("editTuning").value;
+    if (!v||!selected.size) return;
+    library.forEach(function(x){if(selected.has(x.id)) x.tuning=v;});
     scheduleSave(); refresh();
   }
   function deleteSelected() {
     if (!selected.size) return;
-    library = library.filter(function (x) { return !selected.has(x.id); });
+    library=library.filter(function(x){return !selected.has(x.id);});
     selected.clear(); updateSelCount(); scheduleSave(); refresh();
   }
 
   // ---------- Backup ----------
   function exportLib() {
-    var blob = new Blob([JSON.stringify(library, null, 2)], { type: "application/json" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url; a.download = "guitar-roulette-library.json"; a.click();
+    var blob=new Blob([JSON.stringify(library,null,2)],{type:"application/json"});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url; a.download="guitar-roulette-library.json"; a.click();
     URL.revokeObjectURL(url);
   }
   function importLib(file) {
-    var r = new FileReader();
-    r.onload = function (e) {
+    var r=new FileReader();
+    r.onload=function(e) {
       try {
-        var data = JSON.parse(e.target.result);
-        var arr = Array.isArray(data) ? data : (data.library || []);
-        var added = 0, updated = 0;
-        arr.forEach(function (s) {
-          if (!s || !s.title) return;
-          var dup = library.find(function (x) {
-            return x.title.toLowerCase() === String(s.title).toLowerCase() &&
-                   (x.artist || "").toLowerCase() === String(s.artist || "").toLowerCase();
+        var data=JSON.parse(e.target.result);
+        var arr=Array.isArray(data)?data:(data.library||[]);
+        var added=0, updated=0;
+        arr.forEach(function(s) {
+          if (!s||!s.title) return;
+          var dup=library.find(function(x){
+            return x.title.toLowerCase()===String(s.title).toLowerCase()&&
+                   (x.artist||"").toLowerCase()===String(s.artist||"").toLowerCase();
           });
           if (dup) {
-            // update fields from import (preserve existing id)
-            var changed = false;
-            if (s.tuning && dup.tuning !== s.tuning) { dup.tuning = s.tuning; changed = true; }
-            if (s.genre && dup.genre !== s.genre) { dup.genre = String(s.genre); changed = true; }
-            if (s.strings && dup.strings !== String(s.strings)) { dup.strings = String(s.strings); changed = true; }
-            if (s.artist && dup.artist !== String(s.artist)) { dup.artist = String(s.artist); changed = true; }
+            var changed=false;
+            if (s.tuning&&dup.tuning!==s.tuning){dup.tuning=s.tuning;changed=true;}
+            if (s.genre&&dup.genre!==s.genre){dup.genre=String(s.genre);changed=true;}
+            if (s.strings&&dup.strings!==String(s.strings)){dup.strings=String(s.strings);changed=true;}
+            if (s.artist&&dup.artist!==String(s.artist)){dup.artist=String(s.artist);changed=true;}
             if (changed) updated++;
           } else {
-            library.push({ id: uid(), title: String(s.title),
-              artist: String(s.artist || ""), genre: String(s.genre || ""),
-              strings: String(s.strings) === "7" ? "7" : "6",
-              tuning: s.tuning === "drop" ? "drop" : s.tuning === "standard" ? "standard" : "" });
+            library.push({id:uid(),title:String(s.title),artist:String(s.artist||""),
+              genre:String(s.genre||""),strings:String(s.strings)==="7"?"7":"6",
+              tuning:s.tuning==="drop"?"drop":s.tuning==="standard"?"standard":""});
             added++;
           }
         });
         scheduleSave(); refresh();
-        alert("Import complete.\n" + added + " added, " + updated + " updated.");
-      } catch (err) { alert("Couldn't read that file."); }
+        alert("Import complete.\n"+added+" added, "+updated+" updated.");
+      } catch(err) { alert("Couldn't read that file."); }
     };
     r.readAsText(file);
   }
   function restoreSeed() {
-    var added = 0;
-    SEED.forEach(function (s) {
-      var dup = library.some(function (x) {
-        return x.title.toLowerCase() === s.t.toLowerCase() &&
-               (x.artist || "").toLowerCase() === s.a.toLowerCase();
+    var added=0;
+    SEED.forEach(function(s) {
+      var dup=library.some(function(x){
+        return x.title.toLowerCase()===s.t.toLowerCase()&&(x.artist||"").toLowerCase()===s.a.toLowerCase();
       });
-      if (!dup) { library.push({ id: uid(), title: s.t, artist: s.a, genre: s.g, strings: s.s }); added++; }
+      if (!dup){library.push({id:uid(),title:s.t,artist:s.a,genre:s.g,strings:s.s,tuning:s.u||""});added++;}
     });
     scheduleSave(); refresh();
-    alert("Restored " + added + (added === 1 ? " song." : " songs."));
+    alert("Restored "+added+(added===1?" song.":" songs."));
   }
 
   // ---------- UI wiring ----------
-  function bindSeg(id, key) {
-    var seg = document.getElementById(id);
-    seg.querySelectorAll("button").forEach(function (b) {
-      b.onclick = function () {
-        seg.querySelectorAll("button").forEach(function (x) { x.classList.remove("on"); });
-        b.classList.add("on"); filters[key] = b.dataset.v; saveFilters(); renderPool();
+  function bindSeg(id,key) {
+    var seg=document.getElementById(id);
+    seg.querySelectorAll("button").forEach(function(b){
+      b.onclick=function(){
+        seg.querySelectorAll("button").forEach(function(x){x.classList.remove("on");});
+        b.classList.add("on"); filters[key]=b.dataset.v; saveFilters(); renderPool();
       };
     });
   }
   function initFilterUI() {
-    var seg = document.getElementById("segStrings");
-    seg.querySelectorAll("button").forEach(function (b) {
-      b.classList.toggle("on", b.dataset.v === filters.strings);
-    });
-    var seg2 = document.getElementById("segTuning");
-    seg2.querySelectorAll("button").forEach(function (b) {
-      b.classList.toggle("on", b.dataset.v === filters.tuning);
-    });
-  }
-
-  function wire() {
-    document.querySelectorAll(".mini-toggle").forEach(function (b) {
-      b.onclick = function () {
-        var grp = b.dataset.grp;
-        document.querySelectorAll('.mini-toggle[data-grp="' + grp + '"]')
-          .forEach(function (x) { x.classList.remove("on"); });
-        b.classList.add("on");
-        if (grp === "newStrings") newStrings = b.dataset.v;
-        else if (grp === "newTuning") newTuning = b.dataset.v;
-        else if (grp === "bulkStrings") bulkStrings = b.dataset.v;
-        else if (grp === "bulkTuning") bulkTuning = b.dataset.v;
-      };
-    });
-    document.querySelectorAll(".tab").forEach(function (t) {
-      t.onclick = function () {
-        document.querySelectorAll(".tab").forEach(function (x) { x.classList.remove("on"); });
-        document.querySelectorAll(".tab-pane").forEach(function (x) { x.classList.remove("on"); });
-        t.classList.add("on");
-        document.querySelector('.tab-pane[data-pane="' + t.dataset.tab + '"]').classList.add("on");
-      };
-    });
-    document.getElementById("spinBtn").onclick = roll;
-    document.getElementById("addBtn").onclick = addSong;
-    ["inTitle", "inArtist", "inGenre"].forEach(function (id) {
-      document.getElementById(id).addEventListener("keydown", function (e) {
-        if (e.key === "Enter") addSong();
+    ["segStrings","segTuning"].forEach(function(id){
+      var key=id==="segStrings"?"strings":"tuning";
+      var seg=document.getElementById(id);
+      seg.querySelectorAll("button").forEach(function(b){
+        b.classList.toggle("on",b.dataset.v===filters[key]);
       });
     });
-    document.getElementById("bulkBtn").onclick = bulkSearch;
-    document.getElementById("bulkArtist").addEventListener("keydown", function (e) {
-      if (e.key === "Enter") bulkSearch();
+  }
+  function wire() {
+    document.querySelectorAll(".mini-toggle").forEach(function(b){
+      b.onclick=function(){
+        var grp=b.dataset.grp;
+        document.querySelectorAll('.mini-toggle[data-grp="'+grp+'"]').forEach(function(x){x.classList.remove("on");});
+        b.classList.add("on");
+        if (grp==="newStrings") newStrings=b.dataset.v;
+        else if (grp==="newTuning") newTuning=b.dataset.v;
+        else if (grp==="bulkStrings") bulkStrings=b.dataset.v;
+        else if (grp==="bulkTuning") bulkTuning=b.dataset.v;
+      };
     });
-    document.getElementById("bulkAddBtn").onclick = bulkAddSelected;
-    document.getElementById("bulkSelectAll").onclick = function () {
-      document.querySelectorAll("#bulkResults input:not(:disabled)").forEach(function (c) { c.checked = true; });
+    document.querySelectorAll(".tab").forEach(function(t){
+      t.onclick=function(){
+        document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("on");});
+        document.querySelectorAll(".tab-pane").forEach(function(x){x.classList.remove("on");});
+        t.classList.add("on");
+        document.querySelector('.tab-pane[data-pane="'+t.dataset.tab+'"]').classList.add("on");
+      };
+    });
+    document.getElementById("spinBtn").onclick=roll;
+    document.getElementById("addBtn").onclick=addSong;
+    ["inTitle","inArtist","inGenre"].forEach(function(id){
+      document.getElementById(id).addEventListener("keydown",function(e){if(e.key==="Enter")addSong();});
+    });
+    document.getElementById("bulkBtn").onclick=bulkSearch;
+    document.getElementById("bulkArtist").addEventListener("keydown",function(e){if(e.key==="Enter")bulkSearch();});
+    document.getElementById("bulkAddBtn").onclick=bulkAddSelected;
+    document.getElementById("bulkSelectAll").onclick=function(){
+      document.querySelectorAll("#bulkResults input:not(:disabled)").forEach(function(c){c.checked=true;});
     };
-    document.getElementById("bulkSelectNone").onclick = function () {
-      document.querySelectorAll("#bulkResults input").forEach(function (c) { c.checked = false; });
+    document.getElementById("bulkSelectNone").onclick=function(){
+      document.querySelectorAll("#bulkResults input").forEach(function(c){c.checked=false;});
     };
-    document.getElementById("searchBox").addEventListener("input", renderLibrary);
-    document.getElementById("toggleEdit").onclick = function () {
-      editMode = !editMode; selected.clear(); updateSelCount();
-      document.getElementById("bulkEditBar").classList.toggle("on", editMode);
-      this.textContent = editMode ? "Exit edit mode" : "Bulk edit mode";
+    document.getElementById("searchBox").addEventListener("input",renderLibrary);
+    document.getElementById("toggleEdit").onclick=function(){
+      editMode=!editMode; selected.clear(); updateSelCount();
+      document.getElementById("bulkEditBar").classList.toggle("on",editMode);
+      this.textContent=editMode?"Exit edit mode":"Bulk edit mode";
       renderLibrary();
     };
-    document.getElementById("applyGenre").onclick = applyGenreToSel;
-    document.getElementById("applyStrings").onclick = applyStringsToSel;
-    document.getElementById("applyTuning").onclick = applyTuningToSel;
-    document.getElementById("deleteSel").onclick = deleteSelected;
-    document.getElementById("genreAll").onclick = function () {
+    document.getElementById("applyGenre").onclick=applyGenreToSel;
+    document.getElementById("applyStrings").onclick=applyStringsToSel;
+    document.getElementById("applyTuning").onclick=applyTuningToSel;
+    document.getElementById("deleteSel").onclick=deleteSelected;
+    document.getElementById("genreAll").onclick=function(){
       filters.excludedGenres.clear(); saveFilters(); renderGenres(); renderPool();
     };
-    document.getElementById("genreNone").onclick = function () {
-      filters.excludedGenres = new Set(allGenres()); saveFilters(); renderGenres(); renderPool();
+    document.getElementById("genreNone").onclick=function(){
+      filters.excludedGenres=new Set(allGenres()); saveFilters(); renderGenres(); renderPool();
     };
-    document.getElementById("exportBtn").onclick = exportLib;
-    document.getElementById("importBtn").onclick = function () {
-      document.getElementById("importFile").click();
-    };
-    document.getElementById("importFile").onchange = function (e) {
-      if (e.target.files[0]) importLib(e.target.files[0]);
-    };
-    document.getElementById("restoreBtn").onclick = restoreSeed;
-    bindSeg("segStrings", "strings");
-    bindSeg("segTuning", "tuning");
+    document.getElementById("exportBtn").onclick=exportLib;
+    document.getElementById("importBtn").onclick=function(){document.getElementById("importFile").click();};
+    document.getElementById("importFile").onchange=function(e){if(e.target.files[0])importLib(e.target.files[0]);};
+    document.getElementById("restoreBtn").onclick=restoreSeed;
+    bindSeg("segStrings","strings");
+    bindSeg("segTuning","tuning");
   }
 
   // ---------- Gate ----------
   function unlock() {
-    var v = document.getElementById("gateInput").value;
-    if (v === CONFIG.PASSPHRASE && CONFIG.PASSPHRASE.indexOf("PASTE_") === -1) {
-      document.getElementById("gate").style.display = "none";
-      document.getElementById("app").style.display = "block";
-      wire();
-      boot();
-    } else if (CONFIG.PASSPHRASE.indexOf("PASTE_") !== -1) {
-      document.getElementById("gateErr").textContent = "Passphrase not set in CONFIG yet.";
+    var v=document.getElementById("gateInput").value;
+    if (v===CONFIG.PASSPHRASE) {
+      document.getElementById("gate").style.display="none";
+      document.getElementById("app").style.display="block";
+      wire(); boot();
     } else {
-      document.getElementById("gateErr").textContent = "Incorrect passphrase.";
-      document.getElementById("gateInput").value = "";
+      document.getElementById("gateErr").textContent="Incorrect passphrase.";
+      document.getElementById("gateInput").value="";
     }
   }
-  document.getElementById("gateBtn").onclick = unlock;
-  document.getElementById("gateInput").addEventListener("keydown", function (e) {
-    if (e.key === "Enter") unlock();
-  });
+  document.getElementById("gateBtn").onclick=unlock;
+  document.getElementById("gateInput").addEventListener("keydown",function(e){if(e.key==="Enter")unlock();});
   document.getElementById("gateInput").focus();
 
 })();
