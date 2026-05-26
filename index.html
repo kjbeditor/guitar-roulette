@@ -425,8 +425,9 @@
   //  CONFIG
   // ============================================================
   var CONFIG = {
-    NPOINT_URL:  "https://api.npoint.io/583ef5fa85294a649a1d",
-    PASSPHRASE:  "Gu1t@r"
+    BIN_ID:     "6a09e570250b1311c363dca4",
+    MASTER_KEY: "$2a$10$18TNaA1vvJXgRzg6MEi2d.wXiCQcD/SbJcEwoRePBJ/NQOdupSlOq",
+    PASSPHRASE: "Gu1t@r"
   };
   // ============================================================
 
@@ -469,29 +470,41 @@
     document.getElementById("syncText").textContent = text;
   }
 
-  // ---------- Cloud (npoint.io) ----------
-  // npoint.io API:
-  //   GET  https://api.npoint.io/<ID>  — returns the JSON contents
-  //   POST https://api.npoint.io/<ID>  — replaces with new JSON body
-  //   Full CORS support, no auth needed for public bins.
+  // ---------- Cloud (JSONBin) ----------
+  // JSONBin API:
+  //   GET https://api.jsonbin.io/v3/b/<BIN_ID>/latest  — returns { record: { library: [...] }, metadata: {...} }
+  //   PUT https://api.jsonbin.io/v3/b/<BIN_ID>         — replaces with new JSON body
+  //   Header for both: X-Master-Key: <MASTER_KEY>
+  //   The bin is private; only requests carrying the master key can read or write.
+
+  function binUrl(latest) {
+    return "https://api.jsonbin.io/v3/b/" + CONFIG.BIN_ID + (latest ? "/latest" : "");
+  }
 
   async function cloudLoad() {
-    var res = await fetch(CONFIG.NPOINT_URL, {
-      headers: { "Accept": "application/json" }
+    var res = await fetch(binUrl(true), {
+      headers: {
+        "X-Master-Key": CONFIG.MASTER_KEY,
+        "Accept": "application/json"
+      }
     });
     if (!res.ok) throw new Error("load " + res.status);
     var data = await res.json();
-    // npoint may return the raw array, or wrap it under { library: [...] }
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.library)) return data.library;
+    // JSONBin wraps the body under .record; we store under { library: [...] }
+    var rec = data && data.record ? data.record : data;
+    if (Array.isArray(rec)) return rec;
+    if (rec && Array.isArray(rec.library)) return rec.library;
     return [];
   }
 
   async function cloudSave() {
-    var res = await fetch(CONFIG.NPOINT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(library)
+    var res = await fetch(binUrl(false), {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": CONFIG.MASTER_KEY
+      },
+      body: JSON.stringify({ library: library })
     });
     if (!res.ok) throw new Error("save " + res.status);
   }
