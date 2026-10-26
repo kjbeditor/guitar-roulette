@@ -458,6 +458,19 @@
 
   var LOCAL_KEY   = "guitarRoulette:fallback";
   var FILTERS_KEY = "guitarRoulette:filters";
+  var DIRTY_KEY   = "guitarRoulette:unsynced";   // set when a cloud save fails
+  var V2_KEY      = "guitarRoulette:v2";         // set once this browser has run the compact-format version
+
+  function setDirty(on) {
+    try {
+      if (on) window.localStorage.setItem(DIRTY_KEY, "1");
+      else window.localStorage.removeItem(DIRTY_KEY);
+    } catch(e) {}
+  }
+  function lsGet(k) { try { return window.localStorage.getItem(k); } catch(e) { return null; } }
+  function songKey(s) {
+    return String(s.title || "").toLowerCase().trim() + "|" + String(s.artist || "").toLowerCase().trim();
+  }
 
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function esc(s) {
@@ -481,6 +494,38 @@
     return "https://api.jsonbin.io/v3/b/" + CONFIG.BIN_ID + (latest ? "/latest" : "");
   }
 
+  // JSONBin's free plan rejects any bin over 100 KB. The original format
+  // ({library:[{id,title,artist,...}]}) hit that at ~800 songs, so the cloud
+  // copy is now stored compactly as {v:2, s:[[title, artist, genre, strings, tuning], ...]}
+  // — about 49 bytes per song, room for ~2,000. IDs are regenerated on load
+  // (they're only used in-memory). Old-format bins still load fine.
+  var CLOUD_LIMIT = 100000;
+
+  function packLibrary(lib) {
+    return {
+      v: 2,
+      s: lib.map(function(x) {
+        var str = x.strings === "7" ? 7 : x.strings === "6" ? 6 : (x.strings || "");
+        var tun = x.tuning === "drop" ? 1 : x.tuning === "standard" ? 0 : (x.tuning || "");
+        return [x.title || "", x.artist || "", x.genre || "", str, tun];
+      })
+    };
+  }
+  function unpackLibrary(rec) {
+    if (Array.isArray(rec)) return rec;
+    if (rec && Array.isArray(rec.library)) return rec.library;   // old format
+    if (rec && rec.v === 2 && Array.isArray(rec.s)) {
+      return rec.s.map(function(r) {
+        return {
+          id: uid(), title: r[0], artist: r[1], genre: r[2],
+          strings: r[3] === 7 ? "7" : r[3] === 6 ? "6" : String(r[3] || ""),
+          tuning:  r[4] === 1 ? "drop" : r[4] === 0 ? "standard" : String(r[4] || "")
+        };
+      });
+    }
+    return [];
+  }
+
   async function cloudLoad() {
     var res = await fetch(binUrl(true), {
       headers: {
@@ -490,23 +535,31 @@
     });
     if (!res.ok) throw new Error("load " + res.status);
     var data = await res.json();
-    // JSONBin wraps the body under .record; we store under { library: [...] }
+    // JSONBin wraps the body under .record
     var rec = data && data.record ? data.record : data;
-    if (Array.isArray(rec)) return rec;
-    if (rec && Array.isArray(rec.library)) return rec.library;
-    return [];
+    return unpackLibrary(rec);
   }
 
   async function cloudSave() {
+    var body = JSON.stringify(packLibrary(library));
+    if (body.length > CLOUD_LIMIT) {
+      var err = new Error("too big");
+      err.tooBig = true;
+      throw err;
+    }
     var res = await fetch(binUrl(false), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "X-Master-Key": CONFIG.MASTER_KEY
       },
-      body: JSON.stringify({ library: library })
+      body: body
     });
-    if (!res.ok) throw new Error("save " + res.status);
+    if (!res.ok) {
+      var msg = "";
+      try { msg = (await res.json()).message || ""; } catch(e) {}
+      throw new Error("save " + res.status + (msg ? " — " + msg : ""));
+    }
   }
 
   function localSave() {
@@ -519,15 +572,19 @@
 
   function scheduleSave() {
     localSave();
-    if (!cloudReady) return;
+    if (!cloudReady) { setDirty(true); return; }
     setSync("busy", "Saving…");
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(function() {
       cloudSave().then(function() {
+        setDirty(false);
         setSync("ok", "Synced");
       }).catch(function(e) {
         console.error(e);
-        setSync("err", "Save failed — change kept locally");
+        setDirty(true);
+        setSync("err", e.tooBig
+          ? "Library over the 100 KB cloud limit — change kept locally"
+          : "Save failed — change kept locally");
       });
     }, 700);
   }
@@ -552,14 +609,43 @@
     setSync("busy", "Connecting…");
     try {
       var cloud = await cloudLoad();
+      var local = localLoad();
+      var pushLocal = false;
       if (cloud.length === 0) {
-        library = seedLibrary();
-        await cloudSave();
+        library = (local && local.length) ? local : seedLibrary();
+        pushLocal = true;
+      } else if (local && local.length && lsGet(DIRTY_KEY)) {
+        // Last cloud save failed on this browser — the local copy is newer.
+        library = local;
+        pushLocal = true;
+      } else if (local && local.length && !lsGet(V2_KEY)) {
+        // First run of the compact-format version: the old code didn't track
+        // failed saves, so rescue any songs that only made it into the local copy.
+        var have = {};
+        cloud.forEach(function(s) { have[songKey(s)] = true; });
+        var extra = local.filter(function(s) { return s && s.title && !have[songKey(s)]; });
+        library = cloud.concat(extra);
+        pushLocal = extra.length > 0;
       } else {
         library = cloud;
       }
+      try { window.localStorage.setItem(V2_KEY, "1"); } catch(e) {}
       cloudReady = true;
-      setSync("ok", "Synced");
+      if (pushLocal) {
+        try {
+          await cloudSave();
+          setDirty(false);
+          setSync("ok", "Synced");
+        } catch(e) {
+          console.error(e);
+          setDirty(true);
+          setSync("err", e.tooBig
+            ? "Library over the 100 KB cloud limit — change kept locally"
+            : "Save failed — change kept locally");
+        }
+      } else {
+        setSync("ok", "Synced");
+      }
     } catch(e) {
       console.error(e);
       cloudReady = false;
